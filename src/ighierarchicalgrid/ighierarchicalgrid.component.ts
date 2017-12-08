@@ -37,7 +37,12 @@ export class IgHierarchicalGridComponent extends IgGridBase<IgHierarchicalGrid> 
 
 			//check for changes in collection
 			this._changes = this._differ.diff(this._config.dataSource);
-			if (this._config.dataSource.length !== this._dataSource.length) {
+			/* fix for: https://github.com/IgniteUI/igniteui-angular2/issues/193
+			if (this._config.dataSource.length !== this._dataSource.length) { */
+			let pkOld = this._dataSource.map(x => x[pkKey]);
+			let pkNew = this._config.dataSource.map(x => x[pkKey]);
+			let pkDiff = pkOld.filter(e => pkNew.indexOf(e) < 0);
+			if (pkDiff) {
 				this._dataSource = jQuery.extend(true, [], this._config.dataSource);
 				if (this._changes) {
 					this._changes.forEachAddedItem(r => this.addRow(r.item, r.currentIndex));
